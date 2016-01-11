@@ -74,7 +74,7 @@ public class JsonSerializer {
      * @throws InstantiationException
      */
     private static JSONObject toJsonObject(Object o) throws Exception {
-        Class<?> objectClass = o.getClass();
+        Class objectClass = o.getClass();
         JSONObject jsonObject = new JSONObject();
         for(Field field : objectClass.getDeclaredFields()){
             field.setAccessible(true);
@@ -86,10 +86,10 @@ public class JsonSerializer {
                 jsonObject.put(field.getName(), field.get(o));
 
             } else if (null != field.getAnnotation(UseDataAdapter.class)) {
-                Class<JsonDataAdapter> dataAdapter = (Class<JsonDataAdapter>)field
-                                                                            .getAnnotation(UseDataAdapter.class)
-                                                                            .value();
-                jsonObject.put(field.getName(), dataAdapter.newInstance().toJson(field.get(o)));
+                JsonDataAdapter dataAdapter = field.getAnnotation(UseDataAdapter.class)
+                                                                .value()
+                                                                .newInstance();
+                jsonObject.put(field.getName(), dataAdapter.toJson(field.get(o)));
 
             } else {
                 jsonObject.put(field.getName(), toJsonObject(o));
